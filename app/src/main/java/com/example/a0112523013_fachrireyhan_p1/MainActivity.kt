@@ -89,11 +89,8 @@ fun ProfileHeader(
     }
 }
 
-// ============================================================
 // LANGKAH 3: Custom composable #2 -> InfoItem (reusable)
 // Memakai Row (ikon di kiri, teks di kanan)
-// Dipakai berkali-kali dengan data berbeda
-// ============================================================
 @Composable
 fun InfoItem(
     icon: ImageVector,
@@ -127,19 +124,17 @@ fun InfoItem(
     }
 }
 
-// ============================================================
 // LANGKAH 4: ProfileScreen (1 screen Compose)
 // Menyusun ProfileHeader + Card berisi InfoItem + Button
-// ============================================================
 @Composable
 fun ProfileScreen() {
-    // State sederhana: tombol berubah teks saat diklik
+    // Stombol berubah teks saat diklik
     var terhubung by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
         ProfileHeader(
-            name = "Fachri Reyhan",              // TODO: ganti dengan namamu
+            name = "Fachri Reyhan",
             major = "Informatika - Universitas Al Azhar Indonesia"
         )
 
@@ -157,10 +152,10 @@ fun ProfileScreen() {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // InfoItem dipakai ulang 4x -> inilah gunanya composable reusable
+                // InfoItem dipakai ulang 4x
                 InfoItem(Icons.Default.Home, "Kampus", "Universitas Al Azhar Indonesia")
-                InfoItem(Icons.Default.Person, "NIM", "0112523013")   // TODO: ganti
-                InfoItem(Icons.Default.Email, "Email", "fachrireyhan@student.uai.ac.id") // TODO
+                InfoItem(Icons.Default.Person, "NIM", "0112523013")
+                InfoItem(Icons.Default.Email, "Email", "fachrireyhan@student.uai.ac.id")
                 InfoItem(Icons.Default.Place, "Lokasi", "Jakarta Selatan")
             }
         }
@@ -178,9 +173,9 @@ fun ProfileScreen() {
     }
 }
 
-// ============================================================
-// LANGKAH 5: @Preview (lihat tampilan tanpa menjalankan emulator)
-// ============================================================
+
+// @Preview lihat tampilan tanpa menjalankan emulator
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ProfileScreenPreview() {

@@ -1,11 +1,11 @@
-# Project 1 - Mobile Programming
+# 📱 Project 1 - Aplikasi Profil Mahasiswa (Mobile Programming)
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.2.10-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Material 3](https://img.shields.io/badge/Design-Material%203-757575.svg?style=flat&logo=materialdesign)](https://m3.material.io)
 
-Repository ini berisi **Project 1** untuk mata kuliah **Mobile Programming (Semester 7)**. Proyek ini dibangun menggunakan **Android Studio**, bahasa pemrograman **Kotlin**, dan framework antarmuka **Jetpack Compose**.
+Repository ini berisi **Project 1 - Aplikasi Profil Mahasiswa** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini dibuat menggunakan **Android Studio**, **Kotlin**, dan **Jetpack Compose** dengan menerapkan arsitektur komponen deklaratif yang rapi dan modular.
 
 ---
 
@@ -13,17 +13,33 @@ Repository ini berisi **Project 1** untuk mata kuliah **Mobile Programming (Seme
 
 * **Nama**: Fachri Reyhan
 * **NIM**: 0112523013
-* **Mata Kuliah**: Pemrograman Bergerak
-* **Semester**: 7
+* **Program Studi**: Informatik - Universitas Al Azhar Indonesia
+* **Mata Kuliah**: Mobile Programming (Semester 7)
 
 ---
 
-## Fitur & Keunggulan App
+## Fitur & Komponen Aplikasi (`MainActivity.kt`)
 
-- **Modern Declarative UI**: Memanfaatkan Jetpack Compose dan Material Design 3.
-- **Edge-to-Edge Layout**: Pengalaman tampilan penuh (*immersive experience*) dengan dukungan `enableEdgeToEdge()`.
-- **Dynamic Theme**: Mendukung kustomisasi Skema Warna (*Light & Dark Theme*) melalui paket `ui.theme`.
-- **Modern Build Configuration**: Menggunakan Gradle Version Catalog (`libs.versions.toml`) dan Kotlin 2.2.
+Aplikasi terdiri dari layar profil interaktif yang tersusun atas beberapa komponen kustom (*Reusable Custom Composables*):
+
+1. **`ProfileHeader`**:
+   - Menampilkan foto profil melingkar (`foto_profil`) menggunakan `Image` & `CircleShape`.
+   - Menampilkan **Nama Mahasiswa** dan **Program Studi / Universitas** dengan latar belakang warna utama (*Primary Color*).
+
+2. **`InfoItem` (Reusable Component)**:
+   - Komponen terisolasi berbentuk `Row` (ikon di sebelah kiri, label dan nilai di sebelah kanan).
+   - Menampilkan informasi detail kampus seperti:
+     - **Kampus**: Universitas Al Azhar Indonesia (`Icons.Default.Home`)
+     - **NIM**: 0112523013 (`Icons.Default.Person`)
+     - **Email**: fachrireyhan@student.uai.ac.id (`Icons.Default.Email`)
+     - **Lokasi**: Jakarta Selatan (`Icons.Default.Place`)
+
+3. **`ProfileScreen` (State Management Interaktif)**:
+   - Menggabungkan `ProfileHeader`, `Card` berisi daftar `InfoItem`, dan `Button` interaktif.
+   - Menggunakan state `remember { mutableStateOf(false) }` untuk mengubah status tombol antara **"Hubungi Saya"** dan **"Terhubung ✓"** saat diklik.
+
+4. **`ProfileScreenPreview`**:
+   - `@Preview` Composable untuk melihat tampilan UI secara langsung (*live preview*) di Android Studio tanpa perlu menjalankan emulator.
 
 ---
 
@@ -34,6 +50,7 @@ Repository ini berisi **Project 1** untuk mata kuliah **Mobile Programming (Seme
 | **Bahasa Pemrograman** | Kotlin 2.2.10 |
 | **UI Framework** | Jetpack Compose (BOM `2026.02.01`) |
 | **Design System** | Material Design 3 (`androidx.compose.material3`) |
+| **Icons Library** | `androidx.compose.material:material-icons-core` |
 | **Compile / Target SDK** | API Level 37 |
 | **Minimum SDK** | API Level 24 (Android 7.0 Nougat) |
 | **Gradle / AGP** | Gradle 9.6.0 / AGP 9.4.1 |
@@ -49,18 +66,20 @@ Repository ini berisi **Project 1** untuk mata kuliah **Mobile Programming (Seme
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/example/a0112523013_fachrireyhan_p1/
-│   │   │   │   ├── ui/theme/         # Tema, Warna, & Tipografi App
+│   │   │   │   ├── ui/theme/         # Custom Material3 Color Theme & Typography
 │   │   │   │   │   ├── Color.kt
 │   │   │   │   │   ├── Theme.kt
 │   │   │   │   │   └── Type.kt
-│   │   │   │   └── MainActivity.kt   # Activity Utama & Entry Point Compose
+│   │   │   │   └── MainActivity.kt   # ProfileScreen, ProfileHeader, InfoItem, & App Entry
+│   │   │   ├── res/
+│   │   │   │   └── drawable/         # Asset Gambar (foto_profil, dll)
 │   │   │   └── AndroidManifest.xml   # Manifest Aplikasi
-│   └── build.gradle.kts              # Konfigurasi Build Module App
+│   └── build.gradle.kts              # Module Build Script & Dependencies
 ├── gradle/
-│   ├── libs.versions.toml            # Gradle Version Catalog (Dependency Management)
-│   └── wrapper/                      # Gradle Wrapper Properties
-├── ENVIRONMENT.md                    # Catatan Lengkap Environment Proyek
-└── README.md                         # Dokumentasi Repository GitHub
+│   ├── libs.versions.toml            # Gradle Version Catalog
+│   └── wrapper/                      # Gradle Wrapper Configuration
+├── ENVIRONMENT.md                    # Dokumentasi Lingkungan Pengembangan
+└── README.md                         # Dokumentasi Utama Repository
 ```
 
 ---

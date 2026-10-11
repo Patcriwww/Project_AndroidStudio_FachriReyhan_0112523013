@@ -30,9 +30,10 @@ Dokumen ini berisi spesifikasi lingkungan pengembangan (*development environment
 
 ##  Pustaka & Dependencies Utama (`gradle/libs.versions.toml`)
 
-###  UI & Jetpack Compose
+### UI & Jetpack Compose
 * **Compose BOM**: `2026.02.01`
 * **Material 3**: Managed by BOM (`androidx.compose.material3`)
+* **Material Icons Core**: `androidx.compose.material:material-icons-core`
 * **Activity Compose**: `1.8.0` (`androidx.activity:activity-compose`)
 * **UI Tooling & Preview**: Managed by BOM (`androidx.compose.ui:ui-tooling-preview`)
 

@@ -1,11 +1,11 @@
-# 📱 Project 1 - Aplikasi Profil Mahasiswa (Mobile Programming)
+# Edit Profile Screen - Interactive Compose Challenge
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.2.10-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Material 3](https://img.shields.io/badge/Design-Material%203-757575.svg?style=flat&logo=materialdesign)](https://m3.material.io)
 
-Repository ini berisi **Project 1 - Aplikasi Profil Mahasiswa** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini dibuat menggunakan **Android Studio**, **Kotlin**, dan **Jetpack Compose** dengan menerapkan arsitektur komponen deklaratif yang rapi dan modular.
+Repository ini berisi **Tugas Interactive Compose State Challenge** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini mengimplementasikan layar **Edit Profile** interaktif menggunakan **Jetpack Compose** dengan penerapan **State Management**, **State Hoisting**, **Validasi Form Real-time**, **Auto Reset**, serta **Feedback Langsung via Snackbar**.
 
 ---
 
@@ -13,33 +13,49 @@ Repository ini berisi **Project 1 - Aplikasi Profil Mahasiswa** untuk mata kulia
 
 * **Nama**: Fachri Reyhan
 * **NIM**: 0112523013
-* **Program Studi**: Informatik - Universitas Al Azhar Indonesia
+* **Program Studi**: Informatika - Universitas Al Azhar Indonesia
 * **Mata Kuliah**: Mobile Programming (Semester 7)
 
 ---
 
-## Fitur & Komponen Aplikasi (`MainActivity.kt`)
+## Pemenuhan Rubrik & Persyaratan Tugas
 
-Aplikasi terdiri dari layar profil interaktif yang tersusun atas beberapa komponen kustom (*Reusable Custom Composables*):
+| No | Persyaratan Tugas | Implementasi dalam Kode (`MainActivity.kt`) |
+| :-: | :--- | :--- |
+| **1** | **Minimal 2 Text Input** | 3 Text Input: **Nama Lengkap**, **NIM** (Khusus Angka, 10 Digit), dan **Email**. |
+| **2** | **Kontrol Counter** | `CounterRow` untuk memilih **Semester** (1–14) dengan tombol `-` dan `+`. |
+| **3** | **Switch & Checkbox** | `SwitchRow` untuk **Tampilkan Email** dan `CheckboxRow` untuk **Konfirmasi**. |
+| **4** | **Validasi Form** | Validasi Nama (min 3 karakter), NIM (harus 10 angka), dan Email (regex format valid). |
+| **5** | **Feedback Langsung** | Kartu **`SummaryCard`** yang memperbarui ringkasan data mahasiswa secara *real-time* & **Snackbar** info saat tombol Simpan diklik. |
+| **6** | **State Hoisting & Stateless Composables** | Memisahkan logika state pada `EditProfileScreen` dan komponen *stateless*: `ProfileTextField`, `CounterRow`, `SwitchRow`, `CheckboxRow`, `SectionCard`, dan `SummaryCard`. |
+| **7** | **Auto Reset & Tombol Reset** | **Tombol Reset** mandiri & **Auto Reset** seluruh isi form kembali ke kondisi awal setelah data berhasil disimpan. |
 
-1. **`ProfileHeader`**:
-   - Menampilkan foto profil melingkar (`foto_profil`) menggunakan `Image` & `CircleShape`.
-   - Menampilkan **Nama Mahasiswa** dan **Program Studi / Universitas** dengan latar belakang warna utama (*Primary Color*).
+---
 
-2. **`InfoItem` (Reusable Component)**:
-   - Komponen terisolasi berbentuk `Row` (ikon di sebelah kiri, label dan nilai di sebelah kanan).
-   - Menampilkan informasi detail kampus seperti:
-     - **Kampus**: Universitas Al Azhar Indonesia (`Icons.Default.Home`)
-     - **NIM**: 0112523013 (`Icons.Default.Person`)
-     - **Email**: fachrireyhan@student.uai.ac.id (`Icons.Default.Email`)
-     - **Lokasi**: Jakarta Selatan (`Icons.Default.Place`)
+## Arsitektur & Komponen Utama
 
-3. **`ProfileScreen` (State Management Interaktif)**:
-   - Menggabungkan `ProfileHeader`, `Card` berisi daftar `InfoItem`, dan `Button` interaktif.
-   - Menggunakan state `remember { mutableStateOf(false) }` untuk mengubah status tombol antara **"Hubungi Saya"** dan **"Terhubung ✓"** saat diklik.
+### 1. **Fungsi Validasi (Pure Functions)**
+- `validateName(name: String)`: Memastikan nama tidak kosong dan minimal 3 karakter.
+- `validateNim(nim: String)`: Memastikan NIM tidak kosong, hanya terdiri dari angka, dan tepat 10 digit.
+- `validateEmail(email: String)`: Memastikan format email valid menggunakan ekspresi reguler (*Regex*).
 
-4. **`ProfileScreenPreview`**:
-   - `@Preview` Composable untuk melihat tampilan UI secara langsung (*live preview*) di Android Studio tanpa perlu menjalankan emulator.
+### 2. **Komponen Stateless (State Hoisting Pattern)**
+- **`ProfileTextField`**: Textfield stateless dengan dukungan pesan error real-time (*supportingText*).
+- **`CounterRow`**: Kontrol counter stateless untuk pemilihan semester.
+- **`SwitchRow`**: Baris switch stateless untuk visibilitas email.
+- **`CheckboxRow`**: Baris checkbox stateless untuk konfirmasi persetujuan.
+- **`SectionCard`**: Pembungkus card berlatar putih dengan judul bagian.
+- **`SummaryCard`**: Card ringkasan data mahasiswa hasil rekapitulasi real-time.
+
+### 3. **Stateful Container (`EditProfileScreen`)**
+Mengelola seluruh state aplikasi secara aman menggunakan `rememberSaveable { mutableStateOf(...) }`:
+- `name`: State nama mahasiswa.
+- `nim`: State NIM mahasiswa.
+- `email`: State email mahasiswa.
+- `semester`: State angka semester (1-14).
+- `showEmail`: State boolean visibilitas email.
+- `confirmed`: State boolean konfirmasi persetujuan.
+- `submitted`: State trigger pengujian validasi.
 
 ---
 
@@ -70,7 +86,7 @@ Aplikasi terdiri dari layar profil interaktif yang tersusun atas beberapa kompon
 │   │   │   │   │   ├── Color.kt
 │   │   │   │   │   ├── Theme.kt
 │   │   │   │   │   └── Type.kt
-│   │   │   │   └── MainActivity.kt   # ProfileScreen, ProfileHeader, InfoItem, & App Entry
+│   │   │   │   └── MainActivity.kt   # EditProfileScreen, Validation Logic, & Stateless Composables
 │   │   │   ├── res/
 │   │   │   │   └── drawable/         # Asset Gambar (foto_profil, dll)
 │   │   │   └── AndroidManifest.xml   # Manifest Aplikasi
@@ -99,7 +115,7 @@ Aplikasi terdiri dari layar profil interaktif yang tersusun atas beberapa kompon
 
 3. **Jalankan Aplikasi**:
    - Hubungkan perangkat fisik via USB Debugging atau pilih Android Emulator (Minimal API 24).
-   - Klik tombol **Run 'app'** (`Shift + F10`) atau tombol ▶️ pada toolbar Android Studio.
+   - Klik tombol **Run 'app'** (`Shift + F10`) atau jalankan `@Preview` **`EditProfileScreenPreview`**.
 
 ---
 

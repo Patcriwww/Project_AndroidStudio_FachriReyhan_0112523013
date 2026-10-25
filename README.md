@@ -1,4 +1,4 @@
-# 🎓 Student Profile Manager - Mobile Programming
+# Student Profile Manager - Mobile Programming
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.2.10-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)

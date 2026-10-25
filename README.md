@@ -1,11 +1,12 @@
-# Edit Profile Screen - Interactive Compose Challenge
+# 🎓 Student Profile Manager - Mobile Programming
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.2.10-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Material 3](https://img.shields.io/badge/Design-Material%203-757575.svg?style=flat&logo=materialdesign)](https://m3.material.io)
+[![Architecture](https://img.shields.io/badge/Architecture-MVVM_--_Clean-blue.svg?style=flat)](https://developer.android.com/topic/architecture)
 
-Repository ini berisi **Tugas Interactive Compose State Challenge** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini mengimplementasikan layar **Edit Profile** interaktif menggunakan **Jetpack Compose** dengan penerapan **State Management**, **State Hoisting**, **Validasi Form Real-time**, **Auto Reset**, serta **Feedback Langsung via Snackbar**.
+Repository ini berisi proyek **Student Profile Manager** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini dibangun dengan arsitektur **MVVM (Model-View-ViewModel)**, **Jetpack Compose**, **Type-Safe Navigation 2.8+**, **StateFlow**, **Validasi Data Unik**, serta dilengkapi **Unit Test**.
 
 ---
 
@@ -18,44 +19,51 @@ Repository ini berisi **Tugas Interactive Compose State Challenge** untuk mata k
 
 ---
 
-## Pemenuhan Rubrik & Persyaratan Tugas
+## Fitur Utama & Layar Aplikasi
 
-| No | Persyaratan Tugas | Implementasi dalam Kode (`MainActivity.kt`) |
-| :-: | :--- | :--- |
-| **1** | **Minimal 2 Text Input** | 3 Text Input: **Nama Lengkap**, **NIM** (Khusus Angka, 10 Digit), dan **Email**. |
-| **2** | **Kontrol Counter** | `CounterRow` untuk memilih **Semester** (1–14) dengan tombol `-` dan `+`. |
-| **3** | **Switch & Checkbox** | `SwitchRow` untuk **Tampilkan Email** dan `CheckboxRow` untuk **Konfirmasi**. |
-| **4** | **Validasi Form** | Validasi Nama (min 3 karakter), NIM (harus 10 angka), dan Email (regex format valid). |
-| **5** | **Feedback Langsung** | Kartu **`SummaryCard`** yang memperbarui ringkasan data mahasiswa secara *real-time* & **Snackbar** info saat tombol Simpan diklik. |
-| **6** | **State Hoisting & Stateless Composables** | Memisahkan logika state pada `EditProfileScreen` dan komponen *stateless*: `ProfileTextField`, `CounterRow`, `SwitchRow`, `CheckboxRow`, `SectionCard`, dan `SummaryCard`. |
-| **7** | **Auto Reset & Tombol Reset** | **Tombol Reset** mandiri & **Auto Reset** seluruh isi form kembali ke kondisi awal setelah data berhasil disimpan. |
+Aplikasi terdiri dari 3 layar utama yang terintegrasi penuh menggunakan **Navigation 2.8+ Type-Safe Routes**:
+
+### 1. Layar Daftar Mahasiswa (`StudentListScreen`)
+- **Daftar Profil Interactive**: Menampilkan 8 profil mahasiswa awal (`StudentSeed`).
+- **Pencarian Real-time**: Filter nama atau NIM secara instan melalui pencarian input.
+- **Dynamic Avatar**: Menampilkan foto profil kustom (`foto_profil`) untuk Fachri Reyhan dan avatar inisial nama untuk mahasiswa lainnya.
+- **Navigasi Mudah**: Klik item mahasiswa untuk melihat detail, atau tekan tombol **`+ Tambah Profil`** (Extended FAB) untuk menambah profil baru.
+
+### 2. Layar Detail Mahasiswa (`StudentDetailScreen`)
+- Menampilkan rincian profil mahasiswa secara stabil berdasarkan ID unik (ID, NIM, Program Studi, Semester, dan Visibilitas Email).
+- Tombol **`Edit Profil`** untuk melakukan pembaruan data secara langsung.
+- Tombol **`Kembali ke daftar`** untuk navigasi kembali.
+
+### 3. Layar Form Tambah & Edit (`StudentFormScreen`)
+- **Dual Mode (Create & Edit)**: Satu form yang fleksibel untuk menambah mahasiswa baru maupun mengubah profil yang sudah ada.
+- **State Management & Retention**: Penggunaan `rememberSaveable` agar data input tidak hilang saat orientasi layar diputar.
+- **Logika Validasi Lengkap & NIM Unik**:
+  - Nama: minimal 3 karakter.
+  - NIM: wajib 10 digit angka & **divalidasi agar tidak boleh ganda** dengan NIM mahasiswa lain.
+  - Email: validasi format ekspresi reguler (Regex).
+  - Semester: jangkauan angka 1–14.
+- **Fitur Reset & Snackbar Level Aplikasi**: Pesan sukses/gagal ditampilkan via `SnackbarHost` di level aplikasi sehingga notifikasi tetap terlihat saat kembali ke daftar.
 
 ---
 
-## Arsitektur & Komponen Utama
+## Arsitektur & Pola Desain
 
-### 1. **Fungsi Validasi (Pure Functions)**
-- `validateName(name: String)`: Memastikan nama tidak kosong dan minimal 3 karakter.
-- `validateNim(nim: String)`: Memastikan NIM tidak kosong, hanya terdiri dari angka, dan tepat 10 digit.
-- `validateEmail(email: String)`: Memastikan format email valid menggunakan ekspresi reguler (*Regex*).
+```text
+[ Data Layer ]          [ ViewModel Layer ]         [ UI / Compose Layer ]
+ Student.kt      --->    StudentViewModel.kt  --->   StudentListScreen.kt
+ StudentSeed.kt           (StateFlow<List>)          StudentDetailScreen.kt
+                                                     StudentFormScreen.kt
+                                                              ^
+[ Validation ]                                                |
+ StudentValidator.kt -----------------------------------------+
+```
 
-### 2. **Komponen Stateless (State Hoisting Pattern)**
-- **`ProfileTextField`**: Textfield stateless dengan dukungan pesan error real-time (*supportingText*).
-- **`CounterRow`**: Kontrol counter stateless untuk pemilihan semester.
-- **`SwitchRow`**: Baris switch stateless untuk visibilitas email.
-- **`CheckboxRow`**: Baris checkbox stateless untuk konfirmasi persetujuan.
-- **`SectionCard`**: Pembungkus card berlatar putih dengan judul bagian.
-- **`SummaryCard`**: Card ringkasan data mahasiswa hasil rekapitulasi real-time.
-
-### 3. **Stateful Container (`EditProfileScreen`)**
-Mengelola seluruh state aplikasi secara aman menggunakan `rememberSaveable { mutableStateOf(...) }`:
-- `name`: State nama mahasiswa.
-- `nim`: State NIM mahasiswa.
-- `email`: State email mahasiswa.
-- `semester`: State angka semester (1-14).
-- `showEmail`: State boolean visibilitas email.
-- `confirmed`: State boolean konfirmasi persetujuan.
-- `submitted`: State trigger pengujian validasi.
+1. **MVVM (Model-View-ViewModel)**: Pemisahan state UI dari *business logic*. `StudentViewModel` mengelola daftar `StateFlow<List<Student>>`.
+2. **Type-Safe Navigation (Navigation 2.8+)**: Menggunakan `kotlinx.serialization` dengan rute terketik:
+   - `StudentListRoute`
+   - `StudentDetailRoute(val studentId: Int)`
+   - `StudentFormRoute(val studentId: Int = 0)`
+3. **Clean Unit Testing (`StudentValidatorTest.kt`)**: 5 Unit Test otomatis yang menguji validasi nama, NIM 10-digit, Regex email, batas semester, dan NIM unik.
 
 ---
 
@@ -66,11 +74,12 @@ Mengelola seluruh state aplikasi secara aman menggunakan `rememberSaveable { mut
 | **Bahasa Pemrograman** | Kotlin 2.2.10 |
 | **UI Framework** | Jetpack Compose (BOM `2026.02.01`) |
 | **Design System** | Material Design 3 (`androidx.compose.material3`) |
-| **Icons Library** | `androidx.compose.material:material-icons-core` |
+| **Navigasi** | Navigation Compose 2.8+ Type-Safe (`toRoute<T>()`) |
+| **State Management** | StateFlow, `rememberSaveable`, ViewModel |
+| **Testing** | JUnit 4 (`StudentValidatorTest`) |
 | **Compile / Target SDK** | API Level 37 |
 | **Minimum SDK** | API Level 24 (Android 7.0 Nougat) |
 | **Gradle / AGP** | Gradle 9.6.0 / AGP 9.4.1 |
-| **Java Compatibility** | Java 11 |
 
 ---
 
@@ -78,29 +87,31 @@ Mengelola seluruh state aplikasi secara aman menggunakan `rememberSaveable { mut
 
 ```text
 0112523013_FachriReyhan_Project1/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/a0112523013_fachrireyhan_p1/
-│   │   │   │   ├── ui/theme/         # Custom Material3 Color Theme & Typography
-│   │   │   │   │   ├── Color.kt
-│   │   │   │   │   ├── Theme.kt
-│   │   │   │   │   └── Type.kt
-│   │   │   │   └── MainActivity.kt   # EditProfileScreen, Validation Logic, & Stateless Composables
-│   │   │   ├── res/
-│   │   │   │   └── drawable/         # Asset Gambar (foto_profil, dll)
-│   │   │   └── AndroidManifest.xml   # Manifest Aplikasi
-│   └── build.gradle.kts              # Module Build Script & Dependencies
-├── gradle/
-│   ├── libs.versions.toml            # Gradle Version Catalog
-│   └── wrapper/                      # Gradle Wrapper Configuration
-├── ENVIRONMENT.md                    # Dokumentasi Lingkungan Pengembangan
-└── README.md                         # Dokumentasi Utama Repository
+├── app/src/main/java/com/example/a0112523013_fachrireyhan_p1/
+│   ├── data/
+│   │   └── Student.kt             # Data model Student & StudentSeed (8 profil)
+│   ├── navigation/
+│   │   └── AppRoutes.kt           # Type-safe Navigation Routes (Serializable)
+│   ├── validation/
+│   │   └── StudentValidator.kt    # Pure validation functions (Name, NIM, Email, Unique NIM)
+│   ├── viewmodel/
+│   │   └── StudentViewModel.kt    # In-memory repository & StateFlow management
+│   ├── ui/
+│   │   ├── ProfileComponents.kt   # Reusable stateless components (Avatar, Header, Card, Input)
+│   │   ├── StudentListScreen.kt   # Screen 1: Lista & Pencarian Mahasiswa
+│   │   ├── StudentDetailScreen.kt # Screen 2: Tampilan Detail Mahasiswa
+│   │   └── StudentFormScreen.kt   # Screen 3: Form Tambah & Edit Mahasiswa
+│   ├── ui/theme/                  # Color, Theme, & Typography
+│   └── MainActivity.kt            # Entry Point App & NavHost Container
+├── app/src/test/java/com/example/a0112523013_fachrireyhan_p1/
+│   └── StudentValidatorTest.kt    # Unit Test Suite untuk fungsi validasi
+├── ENVIRONMENT.md                 # Dokumentasi Lingkungan Pengembangan
+└── README.md                      # Dokumentasi Utama Repository
 ```
 
 ---
 
-## Cara Menjalankan Proyek (Getting Started)
+## Cara Menjalankan Proyek & Unit Test
 
 1. **Clone Repository**:
    ```bash
@@ -115,7 +126,14 @@ Mengelola seluruh state aplikasi secara aman menggunakan `rememberSaveable { mut
 
 3. **Jalankan Aplikasi**:
    - Hubungkan perangkat fisik via USB Debugging atau pilih Android Emulator (Minimal API 24).
-   - Klik tombol **Run 'app'** (`Shift + F10`) atau jalankan `@Preview` **`EditProfileScreenPreview`**.
+   - Klik tombol **Run 'app'** (`Shift + F10`).
+
+4. **Menjalankan Unit Test**:
+   - Buka terminal di Android Studio dan jalankan:
+     ```bash
+     ./gradlew test
+     ```
+   - Atau klik kanan file `StudentValidatorTest.kt` -> **Run 'StudentValidatorTest'**.
 
 ---
 

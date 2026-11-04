@@ -13,7 +13,7 @@ Dokumen ini berisi spesifikasi lingkungan pengembangan (*development environment
 | **Mata Kuliah** | Mobile Programming (Semester 7) |
 | **Bahasa Pemrograman** | Kotlin `2.2.10` |
 | **UI Framework** | Jetpack Compose (Declarative UI) |
-| **Arsitektur Aplikasi** | MVVM + Clean Architecture + StateFlow |
+| **Arsitektur Aplikasi** | MVVM + Unidirectional Data Flow (UDF) + Route Containers |
 
 ---
 
@@ -40,9 +40,10 @@ Dokumen ini berisi spesifikasi lingkungan pengembangan (*development environment
 * **Activity Compose**: `1.8.0` (`androidx.activity:activity-compose`)
 * **UI Tooling & Preview**: Dikelola oleh BOM (`androidx.compose.ui:ui-tooling-preview`)
 
-### Navigation & Architecture (Type-Safe Navigation)
+### Navigation & Architecture (Type-Safe Navigation & Lifecycle)
 * **Navigation Compose**: `2.9.8` (`androidx.navigation:navigation-compose:2.9.8`)
 * **Lifecycle ViewModel Compose**: `2.9.4` (`androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4`)
+* **Lifecycle Runtime Compose**: `collectAsStateWithLifecycle()`
 * **Kotlinx Serialization JSON**: `1.9.0` (`org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0`)
 
 ### Core & Lifecycle
@@ -50,7 +51,7 @@ Dokumen ini berisi spesifikasi lingkungan pengembangan (*development environment
 * **Lifecycle Runtime KTX**: `2.6.1` (`androidx.lifecycle:lifecycle-runtime-ktx`)
 
 ### Testing Frameworks
-* **JUnit**: `4.13.2` (Unit Testing - `StudentValidatorTest.kt`)
+* **JUnit**: `4.13.2` (Unit Testing - `StudentValidatorTest.kt` & `StudentViewModelTest.kt`)
 * **AndroidX Test JUnit**: `1.1.5` (Instrumentation Testing)
 * **Espresso Core**: `3.5.1` (UI Testing)
 * **Compose Test JUnit4**: Dikelola oleh BOM
@@ -83,7 +84,7 @@ Gunakan *Gradle Wrapper* (`gradlew` / `gradlew.bat`) dari terminal proyek:
   ```bash
   ./gradlew clean
   ```
-* **Menjalankan Unit Test:**
+* **Menjalankan Seluruh Unit Test (Validator & ViewModel):**
   ```bash
   ./gradlew test
   ```

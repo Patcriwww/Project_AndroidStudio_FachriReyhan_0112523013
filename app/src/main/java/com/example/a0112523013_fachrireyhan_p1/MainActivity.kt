@@ -20,16 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.example.a0112523013_fachrireyhan_p1.navigation.StudentDetailRoute
-import com.example.a0112523013_fachrireyhan_p1.navigation.StudentFormRoute
-import com.example.a0112523013_fachrireyhan_p1.navigation.StudentListRoute
-import com.example.a0112523013_fachrireyhan_p1.ui.StudentDetailScreen
-import com.example.a0112523013_fachrireyhan_p1.ui.StudentFormScreen
-import com.example.a0112523013_fachrireyhan_p1.ui.StudentListScreen
+import com.example.a0112523013_fachrireyhan_p1.navigation.StudentAppNavHost
 import com.example.a0112523013_fachrireyhan_p1.viewmodel.StudentViewModel
 import kotlinx.coroutines.launch
 
@@ -45,59 +37,30 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/** Activity adalah host aplikasi, bukan tempat logika bisnis atau form. */
 @Composable
 fun StudentProfileApp(model: StudentViewModel = viewModel()) {
     val navController = rememberNavController()
-    // Snackbar di level aplikasi: tidak ikut hilang ketika form ditutup.
-    val successSnackbar = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     MaterialTheme(colorScheme = lightColorScheme(primary = NavyPrimary)) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            NavHost(
+        Box(Modifier.fillMaxSize()) {
+            StudentAppNavHost(
                 navController = navController,
-                startDestination = StudentListRoute,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                composable<StudentListRoute> {
-                    StudentListScreen(
-                        model = model,
-                        onStudentClick = { id -> navController.navigate(StudentDetailRoute(id)) },
-                        onAddClick = { navController.navigate(StudentFormRoute()) }
-                    )
+                model = model,
+                onFeedback = { message ->
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            duration = SnackbarDuration.Long,
+                            withDismissAction = true
+                        )
+                    }
                 }
-                composable<StudentDetailRoute> { entry ->
-                    val route = entry.toRoute<StudentDetailRoute>()
-                    StudentDetailScreen(
-                        model = model,
-                        studentId = route.studentId,
-                        onBack = { navController.popBackStack() },
-                        onEdit = { navController.navigate(StudentFormRoute(route.studentId)) }
-                    )
-                }
-                composable<StudentFormRoute> { entry ->
-                    val route = entry.toRoute<StudentFormRoute>()
-                    StudentFormScreen(
-                        model = model,
-                        editingId = route.studentId.takeIf { it > 0 },
-                        onBack = { navController.popBackStack() },
-                        onSaved = { message ->
-                            // Kembali secara benar ke halaman sebelumnya, tanpa fake back.
-                            navController.popBackStack()
-                            // Tampil di atas halaman List atau Detail setelah kembali.
-                            scope.launch {
-                                successSnackbar.showSnackbar(
-                                    message = message,
-                                    duration = SnackbarDuration.Long,
-                                    withDismissAction = true
-                                )
-                            }
-                        }
-                    )
-                }
-            }
+            )
             SnackbarHost(
-                hostState = successSnackbar,
+                hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding()
             )
         }

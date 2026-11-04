@@ -4,24 +4,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.example.a0112523013_fachrireyhan_p1.viewmodel.StudentViewModel
+import com.example.a0112523013_fachrireyhan_p1.state.StudentDetailUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentDetailScreen(
-    model: StudentViewModel,
+    state: StudentDetailUiState,
     studentId: Int,
     onBack: () -> Unit,
     onEdit: () -> Unit
 ) {
-    // Mengambil item berdasarkan ID dari route, bukan berdasarkan posisi list.
-    val students by model.students.collectAsState()
-    val student = students.firstOrNull { it.id == studentId }
+    val student = state.student
     Scaffold(
         containerColor = ScreenBackground,
         topBar = {
@@ -36,8 +34,10 @@ fun StudentDetailScreen(
         }
     ) { padding ->
         if (student == null) {
-            Column(Modifier.padding(padding).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Column(
+                Modifier.padding(padding).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
                 Text("Data mahasiswa dengan ID $studentId tidak ditemukan.")
                 OutlinedButton(onClick = onBack) { Text("Kembali") }
             }
@@ -52,8 +52,10 @@ fun StudentDetailScreen(
                     major = "Semester ${student.semester} • Informatika",
                     showFachriPhoto = student.id == 1
                 )
-                Column(Modifier.padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    Modifier.padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     SectionCard(title = "Informasi Mahasiswa") {
                         SummaryRow("ID Profil", "${student.id}")
                         SummaryRow("NIM", student.nim)

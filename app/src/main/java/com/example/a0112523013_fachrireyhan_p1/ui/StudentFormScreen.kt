@@ -4,62 +4,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.a0112523013_fachrireyhan_p1.validation.*
-import com.example.a0112523013_fachrireyhan_p1.viewmodel.StudentViewModel
-import kotlinx.coroutines.launch
+import com.example.a0112523013_fachrireyhan_p1.state.StudentEvent
+import com.example.a0112523013_fachrireyhan_p1.state.StudentFormUiState
 
+/** Tidak ada rememberSaveable, collectAsState, atau pemanggilan ViewModel dalam form. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentFormScreen(
-    model: StudentViewModel,
-    editingId: Int?,
+    state: StudentFormUiState,
+    onEvent: (StudentEvent) -> Unit,
     onBack: () -> Unit,
-    onSaved: (String) -> Unit
+    onSave: () -> Unit
 ) {
-    val students by model.students.collectAsState()
-    val original = students.firstOrNull { it.id == editingId }
-    val isEditing = editingId != null
-    // rememberSaveable menjaga nilai input ketika orientasi layar berubah.
-    var name by rememberSaveable(editingId) { mutableStateOf(original?.name.orEmpty()) }
-    var nim by rememberSaveable(editingId) { mutableStateOf(original?.nim.orEmpty()) }
-    var email by rememberSaveable(editingId) { mutableStateOf(original?.email.orEmpty()) }
-    var semester by rememberSaveable(editingId) { mutableIntStateOf(original?.semester ?: 1) }
-    var showEmail by rememberSaveable(editingId) { mutableStateOf(original?.showEmail ?: true) }
-    var confirmed by rememberSaveable(editingId) { mutableStateOf(false) }
-    var submitted by rememberSaveable(editingId) { mutableStateOf(false) }
-
-    val nameError = validateName(name).takeIf { name.isNotEmpty() || submitted }
-    val uniqueNimError = validateUniqueNim(nim, students.filter { it.id != editingId }.map { it.nim })
-    val nimError = (validateNim(nim) ?: uniqueNimError).takeIf { nim.isNotEmpty() || submitted }
-    val emailError = validateEmail(email).takeIf { email.isNotEmpty() || submitted }
-    val isFormValid = validateName(name) == null && validateNim(nim) == null &&
-        uniqueNimError == null && validateEmail(email) == null && validateSemester(semester) == null
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    fun resetForm() {
-        name = original?.name.orEmpty()
-        nim = original?.nim.orEmpty()
-        email = original?.email.orEmpty()
-        semester = original?.semester ?: 1
-        showEmail = original?.showEmail ?: true
-        confirmed = false
-        submitted = false
-    }
-
     Scaffold(
         containerColor = ScreenBackground,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(if (isEditing) "Edit Profil" else "Tambah Mahasiswa") },
+                title = { Text(if (state.isEditing) "Edit Profil" else "Tambah Mahasiswa") },
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.semantics {
                         contentDescription = "Kembali"
@@ -68,7 +35,7 @@ fun StudentFormScreen(
             )
         }
     ) { padding ->
-        if (isEditing && original == null) {
+        if (!state.existingStudentFound) {
             Column(Modifier.padding(padding).padding(16.dp)) {
                 Text("Mahasiswa tidak ditemukan")
                 OutlinedButton(onClick = onBack) { Text("Kembali") }
@@ -79,68 +46,62 @@ fun StudentFormScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 ProfileHeader(
-                    name = name.ifBlank { "Nama lengkap" },
-                    major = "Semester $semester - Universitas Al Azhar Indonesia",
-                    showFachriPhoto = editingId == 1
+                    name = state.name.ifBlank { "Nama lengkap" },
+                    major = "Semester ${state.semester} - Universitas Al Azhar Indonesia",
+                    showFachriPhoto = state.editingId == 1
                 )
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     SectionCard(title = "Data Pribadi") {
-                        ProfileTextField(value = name, onValueChange = { name = it },
-                            label = "Nama lengkap", error = nameError)
-                        ProfileTextField(value = nim,
-                            onValueChange = { if (it.length <= 10) nim = it },
-                            label = "NIM", error = nimError, keyboardType = KeyboardType.Number)
-                        ProfileTextField(value = email, onValueChange = { email = it },
-                            label = "Email", error = emailError, keyboardType = KeyboardType.Email)
+                        ProfileTextField(
+                            value = state.name,
+                            onValueChange = { onEvent(StudentEvent.NameChanged(it)) },
+                            label = "Nama lengkap", error = state.nameError
+                        )
+                        ProfileTextField(
+                            value = state.nim,
+                            onValueChange = { onEvent(StudentEvent.NimChanged(it)) },
+                            label = "NIM", error = state.nimError,
+                            keyboardType = KeyboardType.Number
+                        )
+                        ProfileTextField(
+                            value = state.email,
+                            onValueChange = { onEvent(StudentEvent.EmailChanged(it)) },
+                            label = "Email", error = state.emailError,
+                            keyboardType = KeyboardType.Email
+                        )
                     }
                     SectionCard(title = "Pengaturan") {
-                        CounterRow(label = "Semester", value = semester, min = 1, max = 14,
-                            onDecrement = { semester-- }, onIncrement = { semester++ })
+                        CounterRow(
+                            label = "Semester", value = state.semester, min = 1, max = 14,
+                            onDecrement = { onEvent(StudentEvent.SemesterChanged(-1)) },
+                            onIncrement = { onEvent(StudentEvent.SemesterChanged(1)) }
+                        )
                         HorizontalDivider()
-                        SwitchRow(label = "Tampilkan Email", checked = showEmail,
-                            onCheckedChange = { showEmail = it })
+                        SwitchRow(
+                            label = "Tampilkan Email", checked = state.showEmail,
+                            onCheckedChange = { onEvent(StudentEvent.ShowEmailChanged(it)) }
+                        )
                         HorizontalDivider()
-                        CheckboxRow(label = "Konfirmasi", checked = confirmed,
-                            onCheckedChange = { confirmed = it })
+                        CheckboxRow(
+                            label = "Konfirmasi", checked = state.confirmed,
+                            onCheckedChange = { onEvent(StudentEvent.ConfirmationChanged(it)) }
+                        )
                     }
-                    Button(
-                        onClick = {
-                            submitted = true
-                            when {
-                                !isFormValid -> scope.launch {
-                                    snackbarHostState.showSnackbar("Periksa kembali data Anda")
-                                }
-                                !confirmed -> scope.launch {
-                                    snackbarHostState.showSnackbar("Tolong konfirmasi terlebih dahulu")
-                                }
-                                else -> {
-                                    val error = model.save(
-                                        editingId = editingId, name = name, nim = nim,
-                                        email = email, semester = semester, showEmail = showEmail
-                                    )
-                                    if (error == null) {
-                                        val message = if (isEditing) {
-                                            "Profil ${name.trim()} berhasil diperbarui"
-                                        } else {
-                                            "Mahasiswa ${name.trim()} berhasil ditambahkan"
-                                        }
-                                        onSaved(message)
-                                    } else {
-                                        scope.launch { snackbarHostState.showSnackbar(error) }
-                                    }
-                                }
-                            }
-                        }, modifier = Modifier.fillMaxWidth().height(48.dp)
-                    ) { Text(if (isEditing) "Simpan Perubahan" else "Simpan Mahasiswa") }
+                    Button(onClick = onSave, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                        Text(if (state.isEditing) "Simpan Perubahan" else "Simpan Mahasiswa")
+                    }
                     OutlinedButton(
-                        onClick = {
-                            resetForm()
-                            scope.launch { snackbarHostState.showSnackbar("Form berhasil direset") }
-                        },
+                        onClick = { onEvent(StudentEvent.ResetClicked) },
                         modifier = Modifier.fillMaxWidth().height(48.dp)
                     ) { Text("Reset") }
-                    SummaryCard(name = name, nim = nim, email = email,
-                        semester = semester, showEmail = showEmail, isValid = isFormValid)
+                    SummaryCard(
+                        name = state.name, nim = state.nim, email = state.email,
+                        semester = state.semester, showEmail = state.showEmail,
+                        isValid = state.isValid
+                    )
                     Spacer(Modifier.height(24.dp))
                 }
             }

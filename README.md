@@ -1,10 +1,9 @@
-# 🎓 Student Profile Manager - Mobile Programming
+# Student Profile Manager - Mobile Programming
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.2.10-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
-[![Material 3](https://img.shields.io/badge/Design-Material%203-757575.svg?style=flat&logo=materialdesign)](https://m3.material.io)
-[![Architecture](https://img.shields.io/badge/Architecture-MVVM_--_UDF_--_Clean-blue.svg?style=flat)](https://developer.android.com/topic/architecture)
+[![Material 3](https://img.shields.io/badge/Design-Material%203-757575.svg?style=flat&logo=materialdesign)](https://m3.material.io)[![Architecture](https://img.shields.io/badge/Architecture-MVVM_--_UDF_--_Clean-blue.svg?style=flat)](https://developer.android.com/topic/architecture)
 
 Repository ini berisi proyek **Student Profile Manager** untuk mata kuliah **Mobile Programming (Semester 7)**. Aplikasi ini dibangun menerapkan **Unidirectional Data Flow (UDF)**, **StateFlow**, **Sealed Interface Events**, **Type-Safe Navigation 2.8+**, **Stateless UI Decoupling**, serta **Unit Test Suite** (Validator & ViewModel).
 

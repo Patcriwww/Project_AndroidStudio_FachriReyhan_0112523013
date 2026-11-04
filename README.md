@@ -22,7 +22,7 @@ Repository ini berisi proyek **Student Profile Manager** untuk mata kuliah **Mob
 
 Aplikasi dibangun dengan arsitektur **UDF (Unidirectional Data Flow)** di mana layar UI bersifat **Stateless** dan terhubung melalui *Route Containers*:
 
-### 1. ayar Daftar Mahasiswa (`StudentListScreen` & `StudentListRouteContent`)
+### 1. Layar Daftar Mahasiswa (`StudentListScreen` & `StudentListRouteContent`)
 - **State-Driven List**: Menampilkan daftar 8 mahasiswa simulasi (`StudentSeed`).
 - **Pencarian Real-time**: Filter pencarian nama/NIM yang memicu `StudentEvent.SearchChanged`.
 - **Stateless Screen**: Menerima `StudentListUiState` dan mentransmisikan callback interaksi ke ViewModel.

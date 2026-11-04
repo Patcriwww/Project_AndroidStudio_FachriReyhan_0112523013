@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.a0112523013_fachrireyhan_p1"
         minSdk = 24
         targetSdk = 37
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -44,6 +44,8 @@ dependencies {
     // Penambahan checkpoint Pertemuan 5: rute bertipe, ViewModel, StateFlow.
     implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+    // P6: collectAsStateWithLifecycle() untuk UI yang lifecycle-aware.
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     testImplementation(libs.junit)

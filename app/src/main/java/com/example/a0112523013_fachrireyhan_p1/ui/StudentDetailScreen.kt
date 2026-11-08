@@ -5,6 +5,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -17,11 +21,29 @@ fun StudentDetailScreen(
     state: StudentDetailUiState,
     studentId: Int,
     onBack: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onDelete: (Int) -> Unit
 ) {
     val student = state.student
+    var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    if (confirmDelete && student != null) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text("Hapus mahasiswa?") },
+            text = { Text("Profil ${student.name} akan dihapus dari database lokal.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete(student.id)
+                }) { Text("Hapus") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) { Text("Batal") }
+            }
+        )
+    }
     Scaffold(
-        containerColor = ScreenBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("Detail Mahasiswa") },
@@ -69,6 +91,8 @@ fun StudentDetailScreen(
                     OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
                         Text("Kembali ke daftar")
                     }
+                    OutlinedButton(onClick = { confirmDelete = true },
+                        modifier = Modifier.fillMaxWidth()) { Text("Hapus Profil") }
                     Spacer(Modifier.height(16.dp))
                 }
             }

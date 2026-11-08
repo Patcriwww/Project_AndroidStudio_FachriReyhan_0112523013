@@ -21,11 +21,15 @@ fun StudentListScreen(
     state: StudentListUiState,
     onSearchChanged: (String) -> Unit,
     onStudentClick: (Int) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     Scaffold(
-        containerColor = ScreenBackground,
-        topBar = { CenterAlignedTopAppBar(title = { Text("Daftar Mahasiswa") }) },
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = { CenterAlignedTopAppBar(
+            title = { Text("Daftar Mahasiswa") },
+            actions = { TextButton(onClick = onSettingsClick) { Text("Pengaturan") } }
+        ) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onAddClick,
@@ -42,7 +46,7 @@ fun StudentListScreen(
                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp)
             )
             Text(
-                "${state.totalCount} profil mahasiswa • Data simulasi",
+                "${state.totalCount} profil mahasiswa • Tersimpan di Room",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
@@ -84,7 +88,7 @@ fun StudentListScreen(
 private fun StudentListItem(student: Student, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(

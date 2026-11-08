@@ -8,24 +8,22 @@ import androidx.navigation.toRoute
 import com.example.a0112523013_fachrireyhan_p1.ui.route.StudentDetailRouteContent
 import com.example.a0112523013_fachrireyhan_p1.ui.route.StudentFormRouteContent
 import com.example.a0112523013_fachrireyhan_p1.ui.route.StudentListRouteContent
+import com.example.a0112523013_fachrireyhan_p1.ui.route.StudentSettingsRouteContent
 import com.example.a0112523013_fachrireyhan_p1.viewmodel.StudentViewModel
 
-/**
- * Navigation hanya ada di lapisan UI. ViewModel tidak menyimpan NavController.
- * Back memakai popBackStack() sehingga tidak membuat duplikat halaman daftar.
- */
 @Composable
 fun StudentAppNavHost(
     navController: NavHostController,
     model: StudentViewModel,
     onFeedback: (String) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = StudentListRoute) {
+    NavHost(navController, startDestination = StudentListRoute) {
         composable<StudentListRoute> {
             StudentListRouteContent(
                 model = model,
                 onStudentClick = { id -> navController.navigate(StudentDetailRoute(id)) },
-                onAddClick = { navController.navigate(StudentFormRoute()) }
+                onAddClick = { navController.navigate(StudentFormRoute()) },
+                onSettingsClick = { navController.navigate(StudentSettingsRoute) }
             )
         }
         composable<StudentDetailRoute> { entry ->
@@ -34,7 +32,12 @@ fun StudentAppNavHost(
                 model = model,
                 studentId = studentId,
                 onBack = { navController.popBackStack() },
-                onEdit = { navController.navigate(StudentFormRoute(studentId)) }
+                onEdit = { navController.navigate(StudentFormRoute(studentId)) },
+                onDeleted = { message ->
+                    navController.popBackStack()
+                    onFeedback(message)
+                },
+                onMessage = onFeedback
             )
         }
         composable<StudentFormRoute> { entry ->
@@ -49,6 +52,12 @@ fun StudentAppNavHost(
                     onFeedback(message)
                 },
                 onMessage = onFeedback
+            )
+        }
+        composable<StudentSettingsRoute> {
+            StudentSettingsRouteContent(
+                model = model,
+                onBack = { navController.popBackStack() }
             )
         }
     }

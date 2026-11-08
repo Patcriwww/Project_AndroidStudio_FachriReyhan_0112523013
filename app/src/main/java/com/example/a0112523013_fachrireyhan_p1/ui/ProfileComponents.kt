@@ -22,9 +22,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.a0112523013_fachrireyhan_p1.R
 
+// Komponen dipindahkan dan dipakai ulang dari MainActivity proyek awal.
 val ScreenBackground = Color(0xFFF4F6F9)
 
 /**
+ * Foto Fachri diambil dari resource drawable proyek asli (R.drawable.foto_profil).
+ * Profil lainnya menggunakan avatar inisial agar tidak mengarang foto mereka.
  */
 @Composable
 fun StudentAvatar(
@@ -71,8 +74,8 @@ fun ProfileHeader(
         StudentAvatar(name = name, showFachriPhoto = showFachriPhoto, size = 96.dp)
         Spacer(Modifier.height(12.dp))
         Text(name, style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, color = Color.White)
-        Text(major, color = Color.White.copy(alpha = .88f), textAlign = TextAlign.Center)
+            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary)
+        Text(major, color = MaterialTheme.colorScheme.onPrimary.copy(alpha = .88f), textAlign = TextAlign.Center)
     }
 }
 
@@ -81,7 +84,7 @@ fun SectionCard(title: String, modifier: Modifier = Modifier,
                 content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

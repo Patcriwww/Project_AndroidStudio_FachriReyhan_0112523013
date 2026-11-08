@@ -23,7 +23,7 @@ fun StudentFormScreen(
     onSave: () -> Unit
 ) {
     Scaffold(
-        containerColor = ScreenBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(if (state.isEditing) "Edit Profil" else "Tambah Mahasiswa") },
@@ -90,8 +90,8 @@ fun StudentFormScreen(
                             onCheckedChange = { onEvent(StudentEvent.ConfirmationChanged(it)) }
                         )
                     }
-                    Button(onClick = onSave, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                        Text(if (state.isEditing) "Simpan Perubahan" else "Simpan Mahasiswa")
+                    Button(onClick = onSave, enabled = !state.isSaving, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                        Text(if (state.isSaving) "Menyimpan..." else if (state.isEditing) "Simpan Perubahan" else "Simpan Mahasiswa")
                     }
                     OutlinedButton(
                         onClick = { onEvent(StudentEvent.ResetClicked) },
